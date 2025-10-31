@@ -12,12 +12,18 @@
 # limitations under the License.
 
 [Unit]
-Description=Initial hibernation setup job
-After=cloud-config.service
+Description=Setup hibernation for Amazon EC2 Instances
+Documentation=https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/hibernation-enabled-AMI.html
+DefaultDependencies=no
+Before=shutdown.target
+After=local-fs.target cloud-init.target acpid.service
 Wants=acpid.service
+ConditionFileIsExecutable=/usr/bin/hibinit-agent
 
 [Service]
-Type=simple
+Type=oneshot
+RemainAfterExit=yes
+User=root
 ExecStart=/usr/bin/hibinit-agent -c /etc/hibinit-config.cfg
 TimeoutStartSec=0
 
